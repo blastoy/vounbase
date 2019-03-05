@@ -13,12 +13,14 @@ export default class Jelai extends PIXI.Sprite {
     x = 0,
     y = 0,
     rotation = 0,
-    anchor = 0.5,
+    anchorX = 0.5,
+    anchorY = 0.5,
     texture,
     sound,
     speed = 0.5,
     currHealth = 2,
     maxHealth = 2,
+    score = 13,
     chase = true,
     target,
   }) {
@@ -31,21 +33,23 @@ export default class Jelai extends PIXI.Sprite {
     this.x = x;
     this.y = y;
     this.rotation = rotation;
-    this.anchor.set(anchor);
+    this.anchor.set(anchorX, anchorY);
 
     this.texture = texture;
     this.sound = sound;
     this.speed = speed;
     this.currHealth = currHealth;
     this.maxHealth = maxHealth;
+    this.score = score;
     this.chase = chase;
     this.target = target;
   }
 
   update(delta) {
     const { resources, bin, maya, spawnSprite, destroySprite } = this.game;
+    const { addScore } = this.game.score;
 
-    if (!this.chase) return true;
+    if (!this.chase || !this.target || this.target._destroyed) return true;
 
     const tan = Math.atan2(
       this.target.y - this.y,
@@ -75,7 +79,7 @@ export default class Jelai extends PIXI.Sprite {
 
       if (this.currHealth > 0) continue;
 
-      switch (random(1, 2)) {
+      switch (random(1, 100)) {
       case 1:
         spawnSprite(new Buff({
           game: this.game,
@@ -104,9 +108,14 @@ export default class Jelai extends PIXI.Sprite {
         break;
       }
 
-      this.sound.play();
-
+      addScore(this.score);
       destroySprite(this);
+      this.sound.play();
+      break;
     }
+
+    if (!PIXI.bump.hit(this, maya)) return;
+
+    maya.takeDamage(1);
   }
 }

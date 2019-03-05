@@ -9,10 +9,12 @@ export default class Maya extends PIXI.Sprite {
     bin = 'player',
     x = 0,
     y = 0,
-    anchor = 0.5,
+    anchorX = 0.5,
+    anchorY = 0.5,
     rotation = 0,
     texture,
-    sound,
+    shootSound,
+    deathSound,
     speed = 5,
     rotSpeed = 0.05,
     currSpeedups = 0,
@@ -33,12 +35,15 @@ export default class Maya extends PIXI.Sprite {
 
     this.x = x;
     this.y = y;
-    this.anchor.set(anchor);
+    this.anchor.set(anchorX, anchorY);
     this.rotation = rotation;
 
-    this.sound = sound;
+    this.shootSound = shootSound;
+    this.deathSound = deathSound;
     this.speed = speed;
     this.rotSpeed = rotSpeed;
+    this.currHealth = 1;
+    this.maxHealth = 1;
     this.currSpeedups = currSpeedups;
     this.maxSpeedups = maxSpeedups;
     this.currUpgrades = currUpgrades;
@@ -51,6 +56,7 @@ export default class Maya extends PIXI.Sprite {
 
     this.addSpeedup = this.addSpeedup.bind(this);
     this.addUpgrade = this.addUpgrade.bind(this);
+    this.takeDamage = this.takeDamage.bind(this);
   }
 
   addSpeedup(amount) {
@@ -61,12 +67,23 @@ export default class Maya extends PIXI.Sprite {
     this.currUpgrades = Math.min(this.currUpgrades + amount, this.maxUpgrades);
   }
 
+  takeDamage(amount) {
+    this.currHealth -= amount;
+  }
+
   update(delta) {
-    const { spawnSprite, resources } = this.game;
+    const { spawnSprite, gameOver, resources } = this.game;
     const { screen } = this.game.app;
     const { isKeyDown, Keys } = this.game.controls;
 
     this.deltaSinceLastShot += delta;
+
+    // death
+    if (this.currHealth < 1) {
+      this.deathSound.play();
+      gameOver();
+      return;
+    }
 
     // forward movement
     let speedCalc = 0;
@@ -173,7 +190,7 @@ export default class Maya extends PIXI.Sprite {
         }));
       }
 
-      this.sound.play();
+      this.shootSound.play();
     }
   }
 }

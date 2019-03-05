@@ -7,7 +7,8 @@ export default class Parallax extends PIXI.Sprite {
     bin = 'bg',
     x = 0,
     y = 0,
-    anchor = 0,
+    anchorX = 0,
+    anchorY = 0,
     rotation = 0,
     texture,
     speed = 1,
@@ -22,7 +23,7 @@ export default class Parallax extends PIXI.Sprite {
 
     this.x = x;
     this.y = y;
-    this.anchor.set(anchor);
+    this.anchor.set(anchorX, anchorY);
     this.rotation = rotation;
 
     this.speed = speed;
@@ -39,17 +40,20 @@ export default class Parallax extends PIXI.Sprite {
       this.y = -this.height + screen.height;
     }
 
-    if (this.target) {
-      const padding = this.width - screen.width;
-      const ratio = padding / screen.width;
-
-      this.x = ratio * this.target.x;
-
-      // fix sprite calculation inaccuracies
-      if (this.x > padding) this.x = padding;
-      if (this.x < 0) this.x = 0;
-
-      this.x *= -1;
+    if (!this.target || this.target._destroyed) {
+      return;
     }
+
+    const padding = this.width - screen.width;
+    const ratio = padding / screen.width;
+
+    this.x = ratio * this.target.x;
+
+    // fix sprite calculation inaccuracies
+    if (this.x > padding) this.x = padding;
+    if (this.x < 0) this.x = 0;
+
+    this.x *= -1;
+
   }
 }

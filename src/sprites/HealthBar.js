@@ -7,7 +7,8 @@ export default class HealthBar extends PIXI.Sprite {
     bin = 'status',
     x = 0,
     y = 0,
-    anchor = 0.5,
+    anchorX = 0.5,
+    anchorY = 0.5,
     rotation = 0,
     texture,
     target,
@@ -20,7 +21,7 @@ export default class HealthBar extends PIXI.Sprite {
 
     this.x = x;
     this.y = y;
-    this.anchor.set(anchor);
+    this.anchor.set(anchorX, anchorY);
     this.rotation = rotation;
 
     this.target = target;

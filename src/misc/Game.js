@@ -3,8 +3,9 @@
 const Keyboard = require('./Keyboard').default;
 
 const Maya = require('../sprites/Maya').default;
-const Parallax = require('../sprites/Parallax').default;
-const Jelai = require('../sprites/Jelai').default;
+const Score = require('../sprites/Score').default;
+
+const Level1 = require('../levels/Level1').default;
 
 export default class Game {
   constructor(elem, app, resources) {
@@ -19,40 +20,34 @@ export default class Game {
 
     this.spawnSprite = this.spawnSprite.bind(this);
     this.destroySprite = this.destroySprite.bind(this);
+    this.gameOver = this.gameOver.bind(this);
+    this._tick = this._tick.bind(this);
 
     this.maya = new Maya({
       game: this,
-      x: app.screen.width / 2,
-      y: app.screen.height / 2,
+      x: this.app.screen.width / 2,
+      y: this.app.screen.height / 2,
       rotation: Math.PI / 2,
-      texture: resources.maya.texture,
-      sound: resources.shoot.sound,
+      texture: this.resources.maya.texture,
+      shootSound: this.resources.shoot.sound,
+      deathSound: this.resources.gameover.sound,
     });
 
     this.spawnSprite(this.maya);
 
-    this.spawnSprite(new Parallax({
-      game: this,
-      y: -this.resources.earth.texture.height + this.app.screen.height,
-      texture: this.resources.earth.texture,
-      target: this.maya,
-    }));
+    this.score = new Score({
+      x: this.app.screen.width - 10,
+      y: 10,
+      score: 0,
+    });
 
-    this.spawnSprite(new Parallax({
-      game: this,
-      y: -resources.clouds.texture.height + app.screen.height,
-      texture: resources.clouds.texture,
-      speed: 0.5,
-    }));
+    this.spawnSprite(this.score);
 
-    this.spawnSprite(new Jelai({
-      game: this,
-      texture: resources.jelai.texture,
-      sound: resources.dead.sound,
-      target: this.maya
-    }));
+    this.currentLevel = new Level1({
+      game: this
+    });
 
-    this.app.ticker.add(this._tick.bind(this));
+    this.app.ticker.add(this._tick);
   }
 
   spawnSprite(sprite) {
@@ -87,7 +82,15 @@ export default class Game {
     sprite = null;
   }
 
+  gameOver() {
+    this.app.ticker.remove(this._tick);
+  }
+
   _tick(delta) {
+    if (this.currentLevel) {
+      this.currentLevel.update(delta);
+    }
+
     for (let key of this.binKeys) {
       for (let sprite of this.bin[key]) {
         sprite.update(delta);

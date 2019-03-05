@@ -18,6 +18,7 @@ PIXI.loader
   .add('pew', './res/pew.wav')
   .add('dead', './res/dead.wav')
   .add('item', './res/item.wav')
+  .add('gameover', './res/gameover.wav')
   .add('bullet1', './res/bullet1.png')
   .add('bullet2', './res/bullet2.png')
   .add('bullet3', './res/bullet3.png')

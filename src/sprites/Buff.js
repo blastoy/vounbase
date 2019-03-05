@@ -7,7 +7,8 @@ export default class Buff extends PIXI.Sprite {
     bin = 'buff',
     x = 0,
     y = 0,
-    anchor = 0.5,
+    anchorX = 0.5,
+    anchorY = 0.5,
     rotation = 0,
     texture,
     sound,
@@ -28,7 +29,7 @@ export default class Buff extends PIXI.Sprite {
 
     this.x = x;
     this.y = y;
-    this.anchor.set(anchor);
+    this.anchor.set(anchorX, anchorY);
     this.rotation = rotation;
 
     this.sound = sound;
@@ -66,9 +67,7 @@ export default class Buff extends PIXI.Sprite {
     if (!PIXI.bump.hit(this, this.target)) return;
 
     this.target[this.action](this.amount);
-
     destroySprite(this);
-
     this.sound.play();
   }
 }
