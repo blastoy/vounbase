@@ -60,6 +60,10 @@ export default class Jelai extends PIXI.Sprite {
     this.x -= this.speed * delta * Math.cos(this.rotation);
     this.y -= this.speed * delta * Math.sin(this.rotation);
 
+    if (PIXI.bump.hit(this, maya)) {
+      maya.takeDamage(1);
+    }
+
     for (let bullet of bin.bullet || []) {
       if (!PIXI.bump.hit(this, bullet)) continue;
 
@@ -113,9 +117,5 @@ export default class Jelai extends PIXI.Sprite {
       this.sound.play();
       break;
     }
-
-    if (!PIXI.bump.hit(this, maya)) return;
-
-    maya.takeDamage(1);
   }
 }
